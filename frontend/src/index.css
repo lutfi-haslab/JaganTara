@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: oklch(0.126 0.037 259.031);
+  --color-foreground: oklch(0.985 0.002 247.858);
+
+  --color-card: oklch(0.126 0.037 259.031);
+  --color-card-foreground: oklch(0.985 0.002 247.858);
+
+  --color-popover: oklch(0.126 0.037 259.031);
+  --color-popover-foreground: oklch(0.985 0.002 247.858);
+
+  --color-primary: oklch(0.646 0.222 254.68);
+  --color-primary-foreground: oklch(0.208 0.042 265.755);
+
+  --color-secondary: oklch(0.279 0.041 260.031);
+  --color-secondary-foreground: oklch(0.985 0.002 247.858);
+
+  --color-muted: oklch(0.279 0.041 260.031);
+  --color-muted-foreground: oklch(0.704 0.04 256.788);
+
+  --color-accent: oklch(0.279 0.041 260.031);
+  --color-accent-foreground: oklch(0.985 0.002 247.858);
+
+  --color-destructive: oklch(0.396 0.141 25.723);
+  --color-destructive-foreground: oklch(0.985 0.002 247.858);
+
+  --color-border: oklch(0.279 0.041 260.031);
+  --color-input: oklch(0.279 0.041 260.031);
+  --color-ring: oklch(0.546 0.245 262.881);
+
+  --radius-xl: 1rem;
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+}
+
+/* Custom Grid Utility for Web Dashboard */
+.jagantara-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+}
+
+/* Mobile-like block utility for Mobile Dashboard */
+.jagantara-mobile-stack {
+  @apply flex flex-col gap-4 max-w-md mx-auto min-h-screen pt-4 pb-20 px-4;
+}
+
+/* Card glassmorphism effect */
+.glass-card {
+  @apply bg-card/80 backdrop-blur-md border border-white/10 shadow-xl;
+}
+
+/* Animated status pulse */
+.status-pulse {
+  @apply relative inline-flex h-3 w-3 rounded-full;
+}
+.status-pulse::after {
+  content: "";
+  @apply absolute inline-flex h-full w-full animate-ping rounded-full opacity-75;
+}
+.status-pulse-online {
+  @apply bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)];
+}
+.status-pulse-online::after {
+  @apply bg-green-400;
+}
+.status-pulse-offline {
+  @apply bg-gray-500;
+}
+.status-pulse-error {
+  @apply bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)];
+}
+.status-pulse-error::after {
+  @apply bg-red-400;
+}

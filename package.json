@@ -1,0 +1,21 @@
+{
+  "name": "jagantara-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "./frontend",
+    "./backend",
+    "./packages/*"
+  ],
+  "scripts": {
+    "clear-ports": "./scripts/clear-ports.sh",
+    "dev:frontend": "cd frontend && bun run dev",
+    "dev:backend": "cd backend && bun run dev",
+    "dev": "bun run clear-ports && concurrently \"bun run dev:frontend\" \"bun run dev:backend\"",
+    "build": "bun --cwd frontend run build && bun --cwd backend run build"
+  },
+
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
