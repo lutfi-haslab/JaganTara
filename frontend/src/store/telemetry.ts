@@ -1,26 +1,56 @@
-import { useEffect, useState } from 'react'
-import { api } from '../services/api'
+import { useEffect, useRef, useState } from 'react'
 
-export function useTelemetry(projectId: string) {
-  const [telemetry, setTelemetry] = useState<Record<string, any>>({});
+const WS_URL = 'ws://localhost:4001';
+
+export function useTelemetry(_projectId: string) {
+  const [telemetry, setTelemetry] = useState<Record<string, string>>({});
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      // For now, poll recent telemetry for ALL devices
-      // Optimization: filter by projectId eventually
-      const recent = await fetch('http://localhost:4000/api/telemetry/recent').then(r => r.json());
-      
-      setTelemetry(prev => {
-        const next = { ...prev };
-        recent.forEach((item: any) => {
-          next[`${item.deviceId}.${item.datastreamId}`] = item.value;
-        });
-        return next;
-      });
-    }, 1000);
+    let active = true;
 
-    return () => clearInterval(interval);
-  }, [projectId]);
+    function applyEvent(item: any) {
+      setTelemetry(prev => ({
+        ...prev,
+        [`${item.deviceId}.${item.datastreamId}`]: String(item.value),
+      }));
+    }
+
+    function connect() {
+      if (!active) return;
+      const ws = new WebSocket(WS_URL);
+      wsRef.current = ws;
+
+      ws.onmessage = (e) => {
+        try {
+          const msg = JSON.parse(e.data);
+          if (msg.type === 'connected') {
+            // Seed with buffered history
+            msg.payload.buffered?.forEach(applyEvent);
+          } else if (msg.type === 'telemetry') {
+            applyEvent(msg.payload);
+          }
+        } catch {}
+      };
+
+      ws.onclose = () => {
+        if (active) {
+          reconnectRef.current = setTimeout(connect, 2000);
+        }
+      };
+
+      ws.onerror = () => ws.close();
+    }
+
+    connect();
+
+    return () => {
+      active = false;
+      if (reconnectRef.current) clearTimeout(reconnectRef.current);
+      wsRef.current?.close();
+    };
+  }, [_projectId]);
 
   return telemetry;
 }

@@ -2,6 +2,7 @@ import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { api } from '../services/api'
 import { Plus, Folder, Layout, Smartphone, Activity } from 'lucide-react'
+import { TopNav } from '../components/TopNav'
 
 export const Route = createLazyFileRoute('/projects/')({
   component: Projects,
@@ -31,7 +32,9 @@ function Projects() {
   }
 
   return (
-    <div className="p-8">
+    <div>
+      <TopNav />
+      <div className="max-w-7xl mx-auto p-8">
       <div className="flex justify-between items-center mb-12">
         <div>
           <h1 className="text-4xl font-bold tracking-tight mb-2">Projects</h1>
@@ -133,6 +136,7 @@ function Projects() {
           </div>
         </div>
       )}
+    </div>
     </div>
   )
 }

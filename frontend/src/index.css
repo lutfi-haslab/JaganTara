@@ -1,76 +1,100 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --color-background: oklch(0.126 0.037 259.031);
-  --color-foreground: oklch(0.985 0.002 247.858);
+  --color-background: oklch(0.08 0.02 260);
+  --color-foreground: oklch(0.97 0.002 247);
 
-  --color-card: oklch(0.126 0.037 259.031);
-  --color-card-foreground: oklch(0.985 0.002 247.858);
+  --color-card: oklch(0.11 0.025 260);
+  --color-card-foreground: oklch(0.97 0.002 247);
 
-  --color-popover: oklch(0.126 0.037 259.031);
-  --color-popover-foreground: oklch(0.985 0.002 247.858);
+  --color-popover: oklch(0.1 0.025 260);
+  --color-popover-foreground: oklch(0.97 0.002 247);
 
-  --color-primary: oklch(0.646 0.222 254.68);
-  --color-primary-foreground: oklch(0.208 0.042 265.755);
+  --color-primary: oklch(0.6 0.24 280);
+  --color-primary-foreground: oklch(0.2 0.042 265);
 
-  --color-secondary: oklch(0.279 0.041 260.031);
-  --color-secondary-foreground: oklch(0.985 0.002 247.858);
+  --color-secondary: oklch(0.22 0.03 260);
+  --color-secondary-foreground: oklch(0.97 0.002 247);
 
-  --color-muted: oklch(0.279 0.041 260.031);
-  --color-muted-foreground: oklch(0.704 0.04 256.788);
+  --color-muted: oklch(0.22 0.03 260);
+  --color-muted-foreground: oklch(0.65 0.04 256);
 
-  --color-accent: oklch(0.279 0.041 260.031);
-  --color-accent-foreground: oklch(0.985 0.002 247.858);
+  --color-accent: oklch(0.22 0.03 260);
+  --color-accent-foreground: oklch(0.97 0.002 247);
 
-  --color-destructive: oklch(0.396 0.141 25.723);
-  --color-destructive-foreground: oklch(0.985 0.002 247.858);
+  --color-destructive: oklch(0.4 0.141 25);
+  --color-destructive-foreground: oklch(0.97 0.002 247);
 
-  --color-border: oklch(0.279 0.041 260.031);
-  --color-input: oklch(0.279 0.041 260.031);
-  --color-ring: oklch(0.546 0.245 262.881);
+  --color-border: oklch(0.22 0.03 260);
+  --color-input: oklch(0.22 0.03 260);
+  --color-ring: oklch(0.55 0.245 280);
 
   --radius-xl: 1rem;
   --radius-lg: 0.75rem;
   --radius-md: 0.5rem;
   --radius-sm: 0.25rem;
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
   }
   body {
     @apply bg-background text-foreground;
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Custom Grid Utility for Web Dashboard */
+/* ─────────────────────────────────────────────
+   Grid system
+   ───────────────────────────────────────────── */
 .jagantara-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 1.5rem;
 }
 
-/* Mobile-like block utility for Mobile Dashboard */
+/* ─────────────────────────────────────────────
+   Mobile dashboard utilities
+   ───────────────────────────────────────────── */
 .jagantara-mobile-stack {
-  @apply flex flex-col gap-4 max-w-md mx-auto min-h-screen pt-4 pb-20 px-4;
+  @apply flex flex-col gap-4;
 }
 
-/* Card glassmorphism effect */
+.jagantara-mobile-card {
+  @apply w-full rounded-2xl bg-zinc-900/60 border border-white/5
+         backdrop-blur-sm overflow-hidden;
+}
+
+/* ─────────────────────────────────────────────
+   Glass card
+   ───────────────────────────────────────────── */
 .glass-card {
   @apply bg-card/80 backdrop-blur-md border border-white/10 shadow-xl;
 }
 
-/* Animated status pulse */
+/* ─────────────────────────────────────────────
+   Animated status pulse
+   ───────────────────────────────────────────── */
 .status-pulse {
-  @apply relative inline-flex h-3 w-3 rounded-full;
+  @apply relative inline-flex h-2.5 w-2.5 rounded-full flex-shrink-0;
 }
 .status-pulse::after {
   content: "";
-  @apply absolute inline-flex h-full w-full animate-ping rounded-full opacity-75;
+  @apply absolute inline-flex h-full w-full animate-ping rounded-full opacity-60;
 }
 .status-pulse-online {
   @apply bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)];
@@ -79,11 +103,69 @@
   @apply bg-green-400;
 }
 .status-pulse-offline {
-  @apply bg-gray-500;
+  @apply bg-zinc-600;
 }
 .status-pulse-error {
   @apply bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)];
 }
 .status-pulse-error::after {
   @apply bg-red-400;
+}
+
+/* ─────────────────────────────────────────────
+   Custom scrollbar
+   ───────────────────────────────────────────── */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ─────────────────────────────────────────────
+   react-grid-layout dark theme overrides
+   ───────────────────────────────────────────── */
+
+/* Drag placeholder */
+.react-grid-placeholder {
+  background: rgba(168, 85, 247, 0.15) !important;
+  border: 2px dashed rgba(168, 85, 247, 0.4) !important;
+  border-radius: 1rem !important;
+  opacity: 1 !important;
+  transition: all 0.1s ease;
+}
+
+/* Resize handle — bottom-right corner icon */
+.react-resizable-handle {
+  background-image: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  z-index: 10;
+}
+.react-resizable-handle::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid rgba(168, 85, 247, 0.6);
+  border-bottom: 2px solid rgba(168, 85, 247, 0.6);
+  border-radius: 1px;
+}
+.react-resizable-handle:hover::after {
+  border-color: rgba(168, 85, 247, 1);
+}
+
+/* Widget card base */
+.react-grid-item > .widget-cell {
+  height: 100%;
 }

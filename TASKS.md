@@ -21,16 +21,23 @@ This document tracks the engineering phases and feature status for the Jagantara
 
 - [x] REST API telemetry endpoint.
 - [x] Internal MQTT Broker (Aedes) for native connectivity.
-- [ ] WebSocket real-time broadcaster (Frontend/Backend).
-- [ ] Batched writes for telemetry storage.
+- [x] WebSocket real-time broadcaster (Bun native WS on port 4001).
+- [x] Ring buffer feeds WS broadcast on every telemetry push.
+- [ ] Batched writes for telemetry storage (currently immediate writes).
 
 ### 2. Dashboard Systems
 
 - [x] Web Dashboard viewer grid system.
 - [x] Dashboard-specific widget types (Gauge, Switch, Value Display).
 - [x] App-like Mobile Dashboard builder/runtime (Vertical blocks).
-- [ ] Dynamic Widget Designer/Editor for both runtimes.
-- [ ] Additional core widgets (Line Charts, Terminal, Sliders).
+- [x] **Widget Designer** — slide-in panel to add/configure/remove widgets (Web Dashboard).
+- [x] LineChart widget with real-time sparkline and gradient fill.
+- [x] Dashboard config persistence via PUT /api/dashboards/:id.
+- [x] WebSocket live/offline status badge in dashboard toolbar.
+- [x] Proper home/landing page replacing Vite placeholder.
+- [ ] Widget Designer for Mobile Dashboard.
+- [ ] Additional core widgets (Terminal, Slider, LED, Radial Gauge).
+- [ ] Drag-and-drop reordering for widgets.
 
 ### 3. Flow Engine
 
@@ -42,7 +49,7 @@ This document tracks the engineering phases and feature status for the Jagantara
 ### 4. Identity & Access
 
 - [x] Project-based isolation logic.
-- [x] Basic dashboard sharing structure.
+- [x] Basic dashboard sharing structure (isPublic + publicToken in schema).
 - [ ] Full Lucia Auth integration (JWT).
 - [ ] Public viewer tokens for shared links.
 - [ ] Role-based access control (Admin, Editor, Viewer).
@@ -69,4 +76,4 @@ This document tracks the engineering phases and feature status for the Jagantara
 ---
 
 _Last Updated: 2026-03-05_
-_Current Focus: WebSocket Broadcasting & Dashboard Designers._
+_Current Focus: Widget Designer (Mobile), Batched Writes, Flow Engine UI._

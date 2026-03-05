@@ -8,7 +8,7 @@ export const api = {
       return r.json();
     }),
 
-    create: (data: { name: string; description?: string }) => 
+    create: (data: { name: string; description?: string }) =>
       fetch(`${BASE_URL}/projects`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -28,6 +28,19 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       }).then(r => r.json()),
+  },
+
+  dashboards: {
+    get: (id: string, token?: string) =>
+      fetch(`${BASE_URL}/dashboards/${id}${token ? `?token=${token}` : ''}`).then(r => r.json()),
+    update: (id: string, data: { name?: string; config?: any; isPublic?: boolean }) =>
+      fetch(`${BASE_URL}/dashboards/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }).then(r => r.json()),
+    delete: (id: string) =>
+      fetch(`${BASE_URL}/dashboards/${id}`, { method: 'DELETE' }).then(r => r.json()),
   },
 
   devices: {

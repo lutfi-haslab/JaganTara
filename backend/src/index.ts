@@ -11,6 +11,17 @@ import { randomUUID } from 'crypto'
 import { setupMqtt } from './lib/mqtt'
 import { processFlows } from './lib/flow-engine'
 
+// Connected WebSocket clients for real-time broadcasting
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const wsClients = new Set<any>();
+
+function broadcastTelemetry(data: object) {
+  const msg = JSON.stringify({ type: 'telemetry', payload: data });
+  wsClients.forEach(client => {
+    try { client.send(msg); } catch {}
+  });
+}
+
 const app = new Hono()
 
 
@@ -153,6 +164,9 @@ app.post('/api/telemetry',
     // For now, write immediately to SQLite
     await db.insert(telemetry).values(data);
     
+    // 3. Broadcast to WebSocket clients in real-time
+    broadcastTelemetry(data);
+
     // Trigger flow engine
     processFlows(data);
 
@@ -194,6 +208,32 @@ app.get('/api/dashboards/:id', async (c) => {
   return c.json({ error: 'Unauthorized' }, 401);
 })
 
+app.put('/api/dashboards/:id',
+  zValidator('json', z.object({
+    name: z.string().min(1).optional(),
+    config: z.any(),
+    isPublic: z.boolean().optional()
+  })),
+  async (c) => {
+    const id = c.req.param('id');
+    const body = c.req.valid('json');
+    const dash = await db.query.dashboards.findFirst({ where: eq(dashboards.id, id) });
+    if (!dash) return c.json({ error: 'Dashboard not found' }, 404);
+    const updated: any = {};
+    if (body.name !== undefined) updated.name = body.name;
+    if (body.config !== undefined) updated.config = body.config;
+    if (body.isPublic !== undefined) updated.isPublic = body.isPublic;
+    await db.update(dashboards).set(updated).where(eq(dashboards.id, id));
+    return c.json({ success: true });
+  }
+)
+
+app.delete('/api/dashboards/:id', async (c) => {
+  const id = c.req.param('id');
+  await db.delete(dashboards).where(eq(dashboards.id, id));
+  return c.json({ success: true });
+})
+
 
 app.get('/api/projects/:id/dashboards', async (c) => {
 
@@ -227,7 +267,31 @@ app.post('/api/projects/:id/dashboards',
 
 const port = process.env.PORT || 4000
 console.log(`Jagantara API is running on http://localhost:${port}`)
-    
+console.log(`Jagantara WS  is broadcasting on ws://localhost:4001`)
+
+// Native Bun WebSocket server for real-time telemetry broadcasting
+// @ts-ignore – Bun.serve is a Bun global; types available at runtime
+Bun.serve({
+  port: 4001,
+  websocket: {
+    // @ts-ignore
+    open(ws: any) {
+      wsClients.add(ws);
+      ws.send(JSON.stringify({ type: 'connected', payload: { buffered: eventBus.getRecent(50) } }));
+    },
+    // @ts-ignore
+    close(ws: any) {
+      wsClients.delete(ws);
+    },
+    message() {},
+  },
+  // @ts-ignore
+  fetch(req: any, server: any) {
+    if (server.upgrade(req)) return;
+    return new Response('WebSocket only', { status: 426 });
+  },
+});
+
 export default {
   port,
   fetch: app.fetch,
